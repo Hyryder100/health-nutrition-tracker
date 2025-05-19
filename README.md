@@ -28,14 +28,6 @@ A full-stack web application that allows users to log and manage their daily hea
 
 ---
 
-## 📷 Screenshots
-
-| Login Page         | Dashboard Example       | Weekly Summary |
-|--------------------|-------------------------|----------------|
-| ![Login](screenshots/login.png) | ![Dashboard](screenshots/dashboard.png) | ![Summary](screenshots/summary.png) |
-
----
-
 ## ⚙️ How to Run the App
 
 ### 🔧 Prerequisites
