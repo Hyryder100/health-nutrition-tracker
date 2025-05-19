@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Exercise Tracker</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 20px;
+    background-color: #f9f9f9;
+  }
+  h1 {
+    color: #2c3e50;
+    text-align: center;
+  }
+  form {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  input[type="text"], input[type="number"] {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button {
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #1c5980;
+  }
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  li {
+    background: white;
+    margin-bottom: 10px;
+    padding: 14px 20px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  li span {
+    font-weight: 600;
+  }
+  form.delete-form button {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>Log Exercise</h1>
+<form action="{{ url_for('add_exercise') }}" method="POST">
+  <input type="text" name="name" placeholder="Exercise name" required />
+  <input type="number" name="duration" placeholder="Duration (minutes)" required />
+  <input type="number" name="calories_burned" placeholder="Calories burned" required />
+  <button type="submit">Add Exercise</button>
+</form>
+
+<h2>Today's Exercises</h2>
+{% if exercises %}
+<ul>
+  {% for ex in exercises %}
+  <li>
+    <span>{{ ex.name }} - {{ ex.calories_burned }} kcal</span>
+    <form class="delete-form" action="{{ url_for('delete_exercise', exercise_id=ex.id) }}" method="POST" onsubmit="return confirm('Delete this exercise?');">
+      <button type="submit">🗑️</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+<p><strong>Total Calories Burned:</strong> {{ total_exercise_cal }}</p>
+{% else %}
+<p>No exercises logged today.</p>
+{% endif %}
+
+</body>
+</html>

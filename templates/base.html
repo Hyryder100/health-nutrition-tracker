@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Health Tracker</title>
+</head>
+<body>
+    <nav style="background-color:#007bff; padding: 1rem;">
+      <a href="{{ url_for('meals_page') }}" style="color:white; margin-right: 1rem;">Meals</a>
+      <a href="{{ url_for('exercise_page') }}" style="color:white; margin-right: 1rem;">Exercise</a>
+      <a href="{{ url_for('water_page') }}" style="color:white; margin-right: 1rem;">Water</a>
+      <a href="{{ url_for('sleep_page') }}" style="color:white; margin-right: 1rem;">Sleep</a>
+      <a href="{{ url_for('weight_page') }}" style="color:white; margin-right: 1rem;">Weight</a>
+      <a href="{{ url_for('logout') }}" style="color:white; float:right;">Logout</a>
+    </nav>
+
+    <hr>
+    {% block content %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="mb-4 text-center">Welcome, {{ current_user.username }}</h1>
+        <h3 class="text-center mb-4">Dashboard - {{ today }}</h3>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">🍽️ Meals</h5>
+                        <a href="{{ url_for('meals_page') }}" class="btn btn-primary mt-3">Go to Meals</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">💧 Water Intake</h5>
+                        <a href="{{ url_for('water_page') }}" class="btn btn-primary mt-3">Go to Water</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">🏋️ Exercise</h5>
+                        <a href="{{ url_for('exercise_page') }}" class="btn btn-primary mt-3">Go to Exercise</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">⚖️ Weight</h5>
+                        <a href="{{ url_for('weight_page') }}" class="btn btn-primary mt-3">Go to Weight</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">🛌 Sleep</h5>
+                        <a href="{{ url_for('sleep_page') }}" class="btn btn-primary mt-3">Go to Sleep</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">📊 Weekly Summary</h5>
+                        <a href="{{ url_for('weekly_summary') }}" class="btn btn-primary mt-3">View Summary</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

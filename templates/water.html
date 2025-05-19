@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Water Intake Tracker</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 0 20px;
+    background-color: #f0f8ff;
+  }
+  h1 {
+    text-align: center;
+    color: #0077b6;
+  }
+  form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  input[type="number"] {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #a0c4ff;
+    border-radius: 4px;
+  }
+  button {
+    background-color: #0077b6;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #023e8a;
+  }
+  p {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #023e8a;
+  }
+</style>
+</head>
+<body>
+
+<h2>Log Water Intake</h2>
+<form action="{{ url_for('add_water') }}" method="POST">
+    <input type="number" name="amount" placeholder="Amount in ml" required min="0" step="0.1" />
+    <button type="submit">Add Water</button>
+</form>
+
+<p><strong>Total Water Today:</strong> {{ water }} ml</p>
+
+<form action="{{ url_for('clear_water') }}" method="POST" onsubmit="return confirm('Are you sure you want to clear water intake for today?');">
+    <button type="submit" style="background-color: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Clear Water Intake</button>
+</form>
+
+
+</body>
+</html>

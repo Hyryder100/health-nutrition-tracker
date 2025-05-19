@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Health Tracker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to Health Tracker</h1>
+    <p>Track your meals and calories each day.</p>
+    <a class="button" href="{{ url_for('dashboard') }}">Go to Dashboard</a>
+  </div>
+</body>
+</html>

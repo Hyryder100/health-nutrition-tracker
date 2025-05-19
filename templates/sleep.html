@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sleep Tracker</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 0 20px;
+    background-color: #f3f4f6;
+  }
+  h1 {
+    text-align: center;
+    color: #4a90e2;
+  }
+  form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  input[type="number"] {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #9bbcff;
+    border-radius: 4px;
+  }
+  button {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #3366cc;
+  }
+  p {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #1e3a8a;
+  }
+  .chart-container {
+    margin-top: 30px;
+  }
+  canvas {
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<h1>Sleep Tracker</h1>
+
+<form action="{{ url_for('add_sleep') }}" method="POST">
+  <input type="number" name="hours" placeholder="Hours slept" required min="0" step="0.1" />
+  <button type="submit">Save Sleep</button>
+</form>
+
+<p>You slept {{ sleep_hours }} hours today.</p>
+
+<div class="chart-container">
+  <canvas id="sleepChart" width="400" height="200"></canvas>
+</div>
+
+<p>📊 Weekly Average Sleep: <strong>{{ weekly_average }} hours</strong></p>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('sleepChart').getContext('2d');
+  const sleepChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: {{ sleep_days | tojson }},
+      datasets: [{
+        label: 'Hours Slept',
+        data: {{ sleep_hours_list | tojson }},
+        backgroundColor: 'rgba(40, 167, 69, 0.2)',
+        borderColor: '#28a745',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: '#28a745'
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Hours'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Date'
+          }
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Meals Tracker</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 20px;
+    background-color: #f9f9f9;
+  }
+  h1 {
+    color: #2c3e50;
+    text-align: center;
+  }
+  form {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  input[type="text"], input[type="number"] {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #1f8e4a;
+  }
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  li {
+    background: white;
+    margin-bottom: 10px;
+    padding: 14px 20px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  li span {
+    font-weight: 600;
+  }
+  form.delete-form button {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>Add Meal</h1>
+<form action="{{ url_for('add_meal') }}" method="POST">
+  <input type="text" name="name" placeholder="Meal name" required />
+  <input type="number" name="calories" placeholder="Calories" required />
+  <button type="submit">Add</button>
+</form>
+
+<h2>Today's Meals</h2>
+{% if meals %}
+<ul>
+  {% for meal in meals %}
+  <li>
+    <span>{{ meal.name }} - {{ meal.calories }} kcal</span>
+    <form class="delete-form" action="{{ url_for('delete_meal', meal_id=meal.id) }}" method="POST" onsubmit="return confirm('Delete this meal?');">
+      <button type="submit">🗑️</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+<p><strong>Total Calories:</strong> {{ total_cal }}</p>
+{% else %}
+<p>No meals logged today.</p>
+{% endif %}
+
+</body>
+</html>
