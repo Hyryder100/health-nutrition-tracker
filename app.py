@@ -2,10 +2,18 @@ import sqlite3
 from flask import Flask, g, render_template, request, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import date, timedelta
+import joblib
+import numpy as np
 
 app = Flask(__name__)
 app.secret_key = "my_super_secret_1234"
 DATABASE = "database.db"
+
+calorie_model = joblib.load("calorie_predictor.pkl")
+
+def predict_calories(weight, sleep, exercise, previous_cal):
+    features = np.array([[weight, sleep, exercise, previous_cal]])
+    return int(calorie_model.predict(features)[0])
 
 # --- Step 1: Add routes for each feature ---
 
@@ -241,9 +249,37 @@ def dashboard():
     sleep_row = db.execute("SELECT hours FROM sleep WHERE day = ? AND user_id = ?", (today, current_user.id)).fetchone()
     sleep_hours = sleep_row["hours"] if sleep_row else 0
 
+    # AI-like Smart Suggestions (rule-based)
+    suggestions = []
+
+    # Suggest water
+    if water < 2000:
+        suggestions.append("💧 Try to drink at least 2 liters of water today.")
+
+    # Suggest sleep
+    if sleep_hours < 6:
+        suggestions.append("😴 Try to get at least 7 hours of sleep for better recovery.")
+
+    # Suggest exercise
+    if total_exercise_cal < 100:
+        suggestions.append("🏃‍♂️ Try to get some light exercise to stay active.")
+
+    # Suggest meal balance
+    if total_cal < 1200:
+        suggestions.append("🍽️ Consider eating a bit more for balanced energy.")
+    elif total_cal > 2500:
+        suggestions.append("⚠️ Your calorie intake seems high today. Keep an eye on it.")
+
+    if latest_weight and total_cal:
+        predicted_cal = predict_calories(latest_weight, sleep_hours, total_exercise_cal, total_cal)
+    else:
+        predicted_cal = None
+
+
+
     return render_template("dashboard.html", meals=meals, total_cal=total_cal, water=water, exercises=exercises,
                        total_exercise_cal=total_exercise_cal, latest_weight=latest_weight,
-                       weight_day=weight_day, today=today, sleep_hours=sleep_hours)
+                       weight_day=weight_day, today=today, sleep_hours=sleep_hours, suggestions=suggestions, predicted_cal=predicted_cal)
 
 @app.route('/meals')
 @login_required

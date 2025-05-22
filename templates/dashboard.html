@@ -62,6 +62,25 @@
             </div>
         </div>
 
+        {% if predicted_cal %}
+          <div style="margin-top: 1rem; background-color: #e7f3ff; padding: 1rem; border-radius: 5px;">
+            <strong>🔮 Predicted Calorie Target:</strong> {{ predicted_cal }} kcal
+          </div>
+        {% endif %}
+
+
+        {% if suggestions %}
+          <div style="margin-top: 2rem; background: #fff9db; border-left: 5px solid #ffc107; padding: 1rem; border-radius: 4px;">
+            <h3>💡 Smart Suggestions</h3>
+            <ul>
+              {% for tip in suggestions %}
+                <li>{{ tip }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+
         <div class="text-center mt-5">
             <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
         </div>
