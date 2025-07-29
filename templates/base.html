@@ -2,19 +2,172 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Health Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NutriTracker AI - Smart Health & Nutrition Management{% endblock %}</title>
+    
+    <!-- Meta tags for SEO and PWA -->
+    <meta name="description" content="AI-powered nutrition tracking and health management platform">
+    <meta name="keywords" content="nutrition, health, AI, diet, fitness, wellness">
+    <meta name="author" content="NutriTracker AI">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js for data visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Additional CSS -->
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav style="background-color:#007bff; padding: 1rem;">
-      <a href="{{ url_for('meals_page') }}" style="color:white; margin-right: 1rem;">Meals</a>
-      <a href="{{ url_for('exercise_page') }}" style="color:white; margin-right: 1rem;">Exercise</a>
-      <a href="{{ url_for('water_page') }}" style="color:white; margin-right: 1rem;">Water</a>
-      <a href="{{ url_for('sleep_page') }}" style="color:white; margin-right: 1rem;">Sleep</a>
-      <a href="{{ url_for('weight_page') }}" style="color:white; margin-right: 1rem;">Weight</a>
-      <a href="{{ url_for('logout') }}" style="color:white; float:right;">Logout</a>
+    <!-- Navigation -->
+    {% if current_user.is_authenticated %}
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('dashboard') }}" class="nav-logo">
+                🍎 NutriTracker AI
+            </a>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">
+                    📊 Dashboard
+                </a>
+                <a href="{{ url_for('meals_page') }}" class="nav-link">
+                    🍽️ Meals
+                </a>
+                <a href="{{ url_for('exercise_page') }}" class="nav-link">
+                    🏋️ Exercise
+                </a>
+                <a href="{{ url_for('ai_meal_plan') }}" class="nav-link">
+                    🤖 AI Meal Plan
+                </a>
+                <a href="{{ url_for('health_insights') }}" class="nav-link">
+                    💡 Insights
+                </a>
+                <a href="{{ url_for('weekly_summary') }}" class="nav-link">
+                    📈 Analytics
+                </a>
+                <a href="{{ url_for('profile') }}" class="nav-link">
+                    👤 Profile
+                </a>
+                <a href="{{ url_for('logout') }}" class="nav-link">
+                    🚪 Logout
+                </a>
+            </div>
+        </div>
     </nav>
+    {% endif %}
 
-    <hr>
-    {% block content %}{% endblock %}
+    <!-- Flash Messages -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}" onclick="this.remove()">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    {% if current_user.is_authenticated %}
+    <footer style="text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 4rem;">
+        <p>&copy; 2024 NutriTracker AI - Smart Health & Nutrition Management</p>
+        <p style="font-size: 0.875rem; margin-top: 0.5rem;">
+            Powered by AI | Built for Better Health
+        </p>
+    </footer>
+    {% endif %}
+
+    <!-- JavaScript -->
+    <script>
+        // Flash message auto-hide
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                setTimeout(function() {
+                    message.style.opacity = '0';
+                    setTimeout(function() {
+                        message.remove();
+                    }, 300);
+                }, 5000);
+            });
+        });
+
+        // Add loading states to buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    if (this.type === 'submit' || this.closest('form')) {
+                        this.disabled = true;
+                        this.innerHTML = '<span class="loading"></span> Processing...';
+                        setTimeout(() => {
+                            this.disabled = false;
+                        }, 3000);
+                    }
+                });
+            });
+        });
+
+        // Enhanced form validation
+        function validateForm(formElement) {
+            const inputs = formElement.querySelectorAll('input[required], select[required], textarea[required]');
+            let isValid = true;
+            
+            inputs.forEach(function(input) {
+                if (!input.value.trim()) {
+                    input.style.borderColor = 'var(--accent-color)';
+                    isValid = false;
+                } else {
+                    input.style.borderColor = 'var(--border-color)';
+                }
+            });
+            
+            return isValid;
+        }
+
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Progress bar animations
+        function animateProgressBars() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(function(bar) {
+                const width = bar.style.width || bar.getAttribute('data-width');
+                bar.style.width = '0%';
+                setTimeout(function() {
+                    bar.style.width = width;
+                }, 100);
+            });
+        }
+
+        // Call animations when page loads
+        document.addEventListener('DOMContentLoaded', animateProgressBars);
+    </script>
+
+    <!-- Additional JavaScript -->
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

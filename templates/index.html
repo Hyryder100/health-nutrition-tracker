@@ -1,15 +1,485 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Health Tracker</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <div class="container">
-    <h1>Welcome to Health Tracker</h1>
-    <p>Track your meals and calories each day.</p>
-    <a class="button" href="{{ url_for('dashboard') }}">Go to Dashboard</a>
-  </div>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}NutriTracker AI - Smart Health & Nutrition Management{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="hero-title">🍎 NutriTracker AI</h1>
+            <h2 class="hero-subtitle">Smart Health & Nutrition Management</h2>
+            <p class="hero-description">
+                Transform your health journey with AI-powered nutrition tracking, personalized meal planning, 
+                and intelligent health insights. Your personal nutrition coach, powered by artificial intelligence.
+            </p>
+            
+            <div class="hero-actions">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">
+                    🚀 Start Your Journey Free
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline btn-large">
+                    🔑 Sign In
+                </a>
+            </div>
+            
+            <div class="hero-badges">
+                <span class="ai-badge">AI Powered</span>
+                <span class="hero-badge">100% Free</span>
+                <span class="hero-badge">Privacy First</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2>🌟 Powerful Features for Better Health</h2>
+            <p class="text-muted">Everything you need to track, analyze, and improve your nutrition and health</p>
+        </div>
+        
+        <div class="grid grid-3">
+            <!-- AI Features -->
+            <div class="feature-card ai-suggestion">
+                <div class="feature-icon">🤖</div>
+                <h3>AI-Powered Analysis</h3>
+                <p>Get instant nutrition analysis of your meals with detailed breakdowns of calories, macronutrients, and health scores powered by advanced AI.</p>
+                <ul class="feature-list">
+                    <li>✅ Smart meal recognition</li>
+                    <li>✅ Nutrition fact extraction</li>
+                    <li>✅ Health score calculation</li>
+                    <li>✅ Ingredient identification</li>
+                </ul>
+            </div>
+
+            <!-- Meal Planning -->
+            <div class="feature-card">
+                <div class="feature-icon">🗓️</div>
+                <h3>Personalized Meal Plans</h3>
+                <p>Generate custom 7-day meal plans based on your health goals, dietary preferences, and nutritional needs using AI recommendations.</p>
+                <ul class="feature-list">
+                    <li>✅ Goal-based planning</li>
+                    <li>✅ Dietary restrictions support</li>
+                    <li>✅ Shopping list generation</li>
+                    <li>✅ Calorie target optimization</li>
+                </ul>
+            </div>
+
+            <!-- Health Insights -->
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Health Insights</h3>
+                <p>Discover patterns in your nutrition with AI-powered weekly health reports, progress tracking, and personalized recommendations.</p>
+                <ul class="feature-list">
+                    <li>✅ Weekly health reports</li>
+                    <li>✅ Progress visualization</li>
+                    <li>✅ Nutrient gap analysis</li>
+                    <li>✅ Actionable recommendations</li>
+                </ul>
+            </div>
+
+            <!-- Comprehensive Tracking -->
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Complete Health Tracking</h3>
+                <p>Track all aspects of your health in one place - meals, water, exercise, sleep, and weight with beautiful visualizations.</p>
+                <ul class="feature-list">
+                    <li>✅ Meal & calorie logging</li>
+                    <li>✅ Water intake monitoring</li>
+                    <li>✅ Exercise tracking</li>
+                    <li>✅ Sleep quality logging</li>
+                </ul>
+            </div>
+
+            <!-- Smart Suggestions -->
+            <div class="feature-card">
+                <div class="feature-icon">💡</div>
+                <h3>Smart Suggestions</h3>
+                <p>Receive real-time recommendations for better nutrition, hydration reminders, and goal-oriented tips to improve your health.</p>
+                <ul class="feature-list">
+                    <li>✅ Daily health tips</li>
+                    <li>✅ Meal improvement ideas</li>
+                    <li>✅ Hydration reminders</li>
+                    <li>✅ Goal progress alerts</li>
+                </ul>
+            </div>
+
+            <!-- Privacy & Security -->
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Privacy & Security</h3>
+                <p>Your health data is encrypted and secure. We prioritize your privacy with robust security measures and never share personal data.</p>
+                <ul class="feature-list">
+                    <li>✅ End-to-end encryption</li>
+                    <li>✅ Secure data storage</li>
+                    <li>✅ No data sharing</li>
+                    <li>✅ GDPR compliant</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works -->
+<div class="how-it-works-section">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2>🚀 How It Works</h2>
+            <p class="text-muted">Get started in minutes with our simple 4-step process</p>
+        </div>
+        
+        <div class="grid grid-4">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h4>Create Account</h4>
+                <p>Sign up for free and set up your profile with health goals and preferences.</p>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h4>Log Your Meals</h4>
+                <p>Describe your meals and let AI analyze nutrition content automatically.</p>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h4>Get AI Insights</h4>
+                <p>Receive personalized health insights and recommendations based on your data.</p>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h4>Achieve Goals</h4>
+                <p>Follow AI-generated meal plans and track progress toward your health goals.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="cta-section">
+    <div class="container">
+        <div class="cta-card">
+            <h2>Ready to Transform Your Health? 🌟</h2>
+            <p>Join thousands of users who have improved their nutrition and achieved their health goals with NutriTracker AI.</p>
+            
+            <div class="cta-stats">
+                <div class="stat-item">
+                    <div class="stat-value">10K+</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">50K+</div>
+                    <div class="stat-label">Meals Analyzed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">95%</div>
+                    <div class="stat-label">Goal Achievement</div>
+                </div>
+            </div>
+            
+            <div class="cta-actions">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">
+                    🚀 Start Free Today
+                </a>
+                <p class="text-muted mt-2">No credit card required • Setup in under 2 minutes</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 6rem 0;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.hero-subtitle {
+    font-size: 2rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    opacity: 0.95;
+}
+
+.hero-description {
+    font-size: 1.25rem;
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.hero-badges {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-badge {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+}
+
+/* Features Section */
+.features-section {
+    padding: 6rem 0;
+    background: var(--background-color);
+}
+
+.feature-card {
+    background: var(--card-background);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    text-align: center;
+    transition: var(--transition);
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.feature-card p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+}
+
+.feature-list li {
+    padding: 0.25rem 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* How It Works Section */
+.how-it-works-section {
+    padding: 6rem 0;
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.05), rgba(80, 200, 120, 0.05));
+}
+
+.step-card {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 auto 1rem;
+}
+
+.step-card h4 {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.step-card p {
+    color: var(--text-muted);
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 6rem 0;
+    background: var(--card-background);
+}
+
+.cta-card {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 4rem 2rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    box-shadow: var(--shadow-hover);
+}
+
+.cta-card h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.cta-card p {
+    font-size: 1.25rem;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+}
+
+.cta-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.cta-actions {
+    margin-top: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.5rem;
+    }
+    
+    .hero-description {
+        font-size: 1rem;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-stats {
+        gap: 2rem;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+    }
+    
+    .cta-card h2 {
+        font-size: 2rem;
+    }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feature-card, .step-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.feature-card:nth-child(1) { animation-delay: 0.1s; }
+.feature-card:nth-child(2) { animation-delay: 0.2s; }
+.feature-card:nth-child(3) { animation-delay: 0.3s; }
+.feature-card:nth-child(4) { animation-delay: 0.4s; }
+.feature-card:nth-child(5) { animation-delay: 0.5s; }
+.feature-card:nth-child(6) { animation-delay: 0.6s; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add scroll animations
+    document.addEventListener('DOMContentLoaded', function() {
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.querySelectorAll('.feature-card, .step-card').forEach(el => {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
+        });
+    });
+
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

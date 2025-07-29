@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - NutriTracker AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-4">
+        <h1>👤 Your Health Profile</h1>
+        <p class="text-muted">Personalize your experience with AI-powered recommendations</p>
+    </div>
+
+    <div class="grid grid-2">
+        <!-- Profile Form -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Personal Information</h3>
+            </div>
+            <form method="POST">
+                <div class="form-group">
+                    <label class="form-label" for="age">Age</label>
+                    <input type="number" class="form-input" id="age" name="age" 
+                           value="{{ profile.age if profile else '' }}" 
+                           min="13" max="120" placeholder="e.g., 25">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="gender">Gender</label>
+                    <select class="form-select" id="gender" name="gender">
+                        <option value="">Select Gender</option>
+                        <option value="male" {{ 'selected' if profile and profile.gender == 'male' else '' }}>Male</option>
+                        <option value="female" {{ 'selected' if profile and profile.gender == 'female' else '' }}>Female</option>
+                        <option value="other" {{ 'selected' if profile and profile.gender == 'other' else '' }}>Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="height_cm">Height (cm)</label>
+                    <input type="number" class="form-input" id="height_cm" name="height_cm" 
+                           value="{{ profile.height_cm if profile else '' }}" 
+                           min="100" max="250" step="0.1" placeholder="e.g., 175">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="weight_kg">Weight (kg)</label>
+                    <input type="number" class="form-input" id="weight_kg" name="weight_kg" 
+                           value="{{ profile.weight_kg if profile else '' }}" 
+                           min="30" max="300" step="0.1" placeholder="e.g., 70">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="activity_level">Activity Level</label>
+                    <select class="form-select" id="activity_level" name="activity_level">
+                        <option value="sedentary" {{ 'selected' if profile and profile.activity_level == 'sedentary' else '' }}>
+                            Sedentary (little to no exercise)
+                        </option>
+                        <option value="light" {{ 'selected' if profile and profile.activity_level == 'light' else '' }}>
+                            Light (light exercise 1-3 days/week)
+                        </option>
+                        <option value="moderate" {{ 'selected' if profile and profile.activity_level == 'moderate' else '' }}>
+                            Moderate (moderate exercise 3-5 days/week)
+                        </option>
+                        <option value="active" {{ 'selected' if profile and profile.activity_level == 'active' else '' }}>
+                            Active (hard exercise 6-7 days/week)
+                        </option>
+                        <option value="very_active" {{ 'selected' if profile and profile.activity_level == 'very_active' else '' }}>
+                            Very Active (very hard exercise, physical job)
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="calorie_target">Daily Calorie Target</label>
+                    <input type="number" class="form-input" id="calorie_target" name="calorie_target" 
+                           value="{{ profile.calorie_target if profile else 2000 }}" 
+                           min="1200" max="4000" placeholder="e.g., 2000">
+                    <small class="text-muted">AI will help calculate this based on your goals</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    💾 Save Profile
+                </button>
+            </form>
+        </div>
+
+        <!-- Health Goals & Preferences -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Health Goals & Preferences</h3>
+                <span class="ai-badge">AI Personalization</span>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="health_goals">Health Goals</label>
+                <textarea class="form-textarea" id="health_goals" name="health_goals" 
+                         placeholder="e.g., lose weight, build muscle, improve energy, better sleep, reduce stress">{{ profile.health_goals if profile else '' }}</textarea>
+                <small class="text-muted">Separate multiple goals with commas</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="dietary_preferences">Dietary Preferences & Restrictions</label>
+                <textarea class="form-textarea" id="dietary_preferences" name="dietary_preferences" 
+                         placeholder="e.g., vegetarian, gluten-free, dairy-free, low-carb, Mediterranean">{{ profile.dietary_preferences if profile else '' }}</textarea>
+                <small class="text-muted">Include any allergies, intolerances, or preferred diets</small>
+            </div>
+
+            <!-- Quick Goal Selection -->
+            <div class="mb-3">
+                <label class="form-label">Common Health Goals</label>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-outline btn-small" onclick="addGoal('weight loss')">Weight Loss</button>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addGoal('muscle building')">Muscle Building</button>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addGoal('maintenance')">Weight Maintenance</button>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addGoal('improved energy')">More Energy</button>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addGoal('better sleep')">Better Sleep</button>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addGoal('heart health')">Heart Health</button>
+                </div>
+            </div>
+
+            <!-- Quick Diet Selection -->
+            <div class="mb-3">
+                <label class="form-label">Common Dietary Preferences</label>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-outline btn-small" onclick="addDietPreference('vegetarian')">Vegetarian</button>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addDietPreference('vegan')">Vegan</button>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addDietPreference('gluten-free')">Gluten-Free</button>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addDietPreference('low-carb')">Low-Carb</button>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addDietPreference('keto')">Keto</button>
+                    <button type="button" class="btn btn-outline btn-small" onclick="addDietPreference('Mediterranean')">Mediterranean</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Recommendations Preview -->
+    {% if profile %}
+    <div class="card ai-suggestion">
+        <div class="card-header">
+            <h3 class="card-title">🤖 AI Recommendations Based on Your Profile</h3>
+        </div>
+        <div class="grid grid-3">
+            <div class="text-center">
+                <h4 class="text-primary">Recommended Calories</h4>
+                <div class="stat-value">{{ profile.calorie_target or 2000 }}</div>
+                <small class="text-muted">Based on your activity level and goals</small>
+            </div>
+            
+            <div class="text-center">
+                <h4 class="text-primary">Protein Target</h4>
+                <div class="stat-value">{{ ((profile.calorie_target or 2000) * 0.25 / 4) | round }}g</div>
+                <small class="text-muted">25% of daily calories</small>
+            </div>
+            
+            <div class="text-center">
+                <h4 class="text-primary">Water Goal</h4>
+                <div class="stat-value">{{ ((profile.weight_kg or 70) * 35) | round }}ml</div>
+                <small class="text-muted">35ml per kg body weight</small>
+            </div>
+        </div>
+        
+        <div class="mt-3">
+            <h4>Personalized Suggestions:</h4>
+            <ul>
+                {% if profile.health_goals %}
+                    {% if 'weight loss' in profile.health_goals.lower() %}
+                    <li>💡 Focus on high-protein, low-calorie dense foods</li>
+                    <li>🏃 Aim for 150+ minutes of cardio per week</li>
+                    {% endif %}
+                    {% if 'muscle' in profile.health_goals.lower() %}
+                    <li>💪 Include strength training 3-4 times per week</li>
+                    <li>🥩 Prioritize protein intake post-workout</li>
+                    {% endif %}
+                    {% if 'energy' in profile.health_goals.lower() %}
+                    <li>⚡ Maintain stable blood sugar with balanced meals</li>
+                    <li>😴 Aim for 7-9 hours of quality sleep</li>
+                    {% endif %}
+                {% endif %}
+                <li>🤖 AI meal planning available based on your preferences</li>
+                <li>📊 Personalized health insights updated weekly</li>
+            </ul>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <a href="{{ url_for('ai_meal_plan') }}" class="btn btn-primary">
+                Generate AI Meal Plan
+            </a>
+            <a href="{{ url_for('health_insights') }}" class="btn btn-secondary">
+                View Health Insights
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- BMI Calculator -->
+    {% if profile and profile.height_cm and profile.weight_kg %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📏 Health Metrics</h3>
+        </div>
+        <div class="grid grid-3">
+            <div class="text-center">
+                <h4>BMI</h4>
+                {% set bmi = (profile.weight_kg / ((profile.height_cm / 100) ** 2)) | round(1) %}
+                <div class="stat-value">{{ bmi }}</div>
+                <small class="text-muted">
+                    {% if bmi < 18.5 %}Underweight
+                    {% elif bmi < 25 %}Normal
+                    {% elif bmi < 30 %}Overweight
+                    {% else %}Obese
+                    {% endif %}
+                </small>
+            </div>
+            
+            <div class="text-center">
+                <h4>BMR (Estimated)</h4>
+                {% if profile.gender == 'male' %}
+                    {% set bmr = (88.362 + (13.397 * profile.weight_kg) + (4.799 * profile.height_cm) - (5.677 * (profile.age or 25))) | round %}
+                {% else %}
+                    {% set bmr = (447.593 + (9.247 * profile.weight_kg) + (3.098 * profile.height_cm) - (4.330 * (profile.age or 25))) | round %}
+                {% endif %}
+                <div class="stat-value">{{ bmr }}</div>
+                <small class="text-muted">Calories at rest</small>
+            </div>
+            
+            <div class="text-center">
+                <h4>TDEE (Estimated)</h4>
+                {% set activity_multipliers = {'sedentary': 1.2, 'light': 1.375, 'moderate': 1.55, 'active': 1.725, 'very_active': 1.9} %}
+                {% set tdee = (bmr * activity_multipliers.get(profile.activity_level, 1.55)) | round %}
+                <div class="stat-value">{{ tdee }}</div>
+                <small class="text-muted">Total daily energy expenditure</small>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function addGoal(goal) {
+        const textarea = document.getElementById('health_goals');
+        const currentGoals = textarea.value.trim();
+        
+        if (currentGoals === '') {
+            textarea.value = goal;
+        } else if (!currentGoals.toLowerCase().includes(goal.toLowerCase())) {
+            textarea.value = currentGoals + ', ' + goal;
+        }
+    }
+
+    function addDietPreference(preference) {
+        const textarea = document.getElementById('dietary_preferences');
+        const currentPrefs = textarea.value.trim();
+        
+        if (currentPrefs === '') {
+            textarea.value = preference;
+        } else if (!currentPrefs.toLowerCase().includes(preference.toLowerCase())) {
+            textarea.value = currentPrefs + ', ' + preference;
+        }
+    }
+
+    // Auto-calculate calorie target based on TDEE and goals
+    function calculateCalorieTarget() {
+        const weight = parseFloat(document.getElementById('weight_kg').value);
+        const height = parseFloat(document.getElementById('height_cm').value);
+        const age = parseInt(document.getElementById('age').value) || 25;
+        const gender = document.getElementById('gender').value;
+        const activityLevel = document.getElementById('activity_level').value;
+        const goals = document.getElementById('health_goals').value.toLowerCase();
+
+        if (weight && height && gender && activityLevel) {
+            // Calculate BMR
+            let bmr;
+            if (gender === 'male') {
+                bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+            } else {
+                bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+            }
+
+            // Calculate TDEE
+            const activityMultipliers = {
+                'sedentary': 1.2,
+                'light': 1.375,
+                'moderate': 1.55,
+                'active': 1.725,
+                'very_active': 1.9
+            };
+            const tdee = bmr * activityMultipliers[activityLevel];
+
+            // Adjust based on goals
+            let targetCalories = tdee;
+            if (goals.includes('weight loss') || goals.includes('lose weight')) {
+                targetCalories = tdee - 500; // 500 cal deficit for ~1lb/week loss
+            } else if (goals.includes('muscle') || goals.includes('gain weight')) {
+                targetCalories = tdee + 300; // 300 cal surplus for muscle gain
+            }
+
+            document.getElementById('calorie_target').value = Math.round(targetCalories);
+        }
+    }
+
+    // Add event listeners for auto-calculation
+    ['weight_kg', 'height_cm', 'age', 'gender', 'activity_level', 'health_goals'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', calculateCalorieTarget);
+            element.addEventListener('input', calculateCalorieTarget);
+        }
+    });
+</script>
+{% endblock %}

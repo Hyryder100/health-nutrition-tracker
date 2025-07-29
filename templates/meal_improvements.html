@@ -1,0 +1,442 @@
+{% extends "base.html" %}
+
+{% block title %}Meal Improvements - NutriTracker AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-4">
+        <h1>💡 AI Meal Improvement Suggestions</h1>
+        <p class="text-muted">Get personalized recommendations to make your meals healthier</p>
+        <span class="ai-badge">AI Powered</span>
+    </div>
+
+    <!-- Current Meal -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">🍽️ Current Meal</h3>
+        </div>
+        <div class="meal-item">
+            <div class="meal-info">
+                <div class="meal-name">{{ meal.name }}</div>
+                <div class="meal-details">
+                    {{ meal.description }}
+                    {% if meal.health_score %}
+                    | Health Score: {{ meal.health_score }}/10
+                    {% endif %}
+                </div>
+            </div>
+            <div class="meal-calories">{{ meal.calories }} cal</div>
+        </div>
+    </div>
+
+    {% if suggestions %}
+    <!-- Improved Meal -->
+    <div class="card ai-suggestion">
+        <div class="card-header">
+            <h3 class="card-title">✨ AI-Improved Version</h3>
+            <span class="ai-badge">Enhanced</span>
+        </div>
+        <div class="meal-item">
+            <div class="meal-info">
+                <div class="meal-name">{{ suggestions.improved_meal }}</div>
+                <div class="meal-details">Optimized for better nutrition and health benefits</div>
+            </div>
+            <div class="meal-actions">
+                <button class="btn btn-primary" onclick="useImprovedMeal()">
+                    🚀 Use This Version
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Changes Made -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">🔄 Changes Made</h3>
+        </div>
+        <ul class="list-unstyled">
+            {% for change in suggestions.changes_made %}
+            <li class="d-flex align-items-center gap-2 mb-2">
+                <span style="color: var(--secondary-color); font-size: 1.2rem;">✅</span>
+                {{ change }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Nutritional Improvements -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📊 Nutritional Improvements</h3>
+        </div>
+        <div class="grid grid-2">
+            {% for nutrient, improvement in suggestions.nutritional_improvements.items() %}
+            <div class="nutrition-improvement-item">
+                <h5>{{ nutrient.replace('_', ' ').title() }}</h5>
+                <p class="text-muted">{{ improvement }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Substitutions -->
+    {% if suggestions.substitutions %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">🔄 Smart Substitutions</h3>
+        </div>
+        <div class="substitutions-grid">
+            {% for original, substitute in suggestions.substitutions.items() %}
+            {% if original != 'reason' %}
+            <div class="substitution-card">
+                <div class="substitution-from">
+                    <span class="substitution-label">Replace:</span>
+                    <strong>{{ original.replace('_', ' ').title() }}</strong>
+                </div>
+                <div class="substitution-arrow">→</div>
+                <div class="substitution-to">
+                    <span class="substitution-label">With:</span>
+                    <strong>{{ substitute }}</strong>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% if suggestions.substitutions.reason %}
+            <div class="substitution-reason">
+                <p class="text-muted">💡 <strong>Why:</strong> {{ suggestions.substitutions.reason }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Cooking Tips -->
+    {% if suggestions.cooking_tips %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">👨‍🍳 Healthier Cooking Tips</h3>
+        </div>
+        <div class="grid grid-2">
+            {% for tip in suggestions.cooking_tips %}
+            <div class="tip-card">
+                <div class="tip-icon">🔥</div>
+                <p>{{ tip }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Health Benefits -->
+    {% if suggestions.health_benefits %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">💪 Health Benefits</h3>
+        </div>
+        <ul class="list-unstyled">
+            {% for benefit in suggestions.health_benefits %}
+            <li class="d-flex align-items-center gap-2 mb-2">
+                <span style="color: var(--secondary-color); font-size: 1.2rem;">💚</span>
+                {{ benefit }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">⚡ Actions</h3>
+        </div>
+        <div class="d-flex gap-3 flex-wrap">
+            <button class="btn btn-primary" onclick="useImprovedMeal()">
+                ✨ Use Improved Meal
+            </button>
+            <button class="btn btn-secondary" onclick="saveToFavorites()">
+                ⭐ Save to Favorites
+            </button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+                📊 Back to Dashboard
+            </a>
+            <button class="btn btn-warning" onclick="getMoreSuggestions()">
+                🔄 More Suggestions
+            </button>
+            <button class="btn btn-success" onclick="shareImprovement()">
+                🔗 Share
+            </button>
+        </div>
+    </div>
+
+    <!-- Additional Tips -->
+    <div class="card ai-suggestion">
+        <div class="card-header">
+            <h3 class="card-title">💡 Pro Tips</h3>
+        </div>
+        <div class="grid grid-2">
+            <div>
+                <h4>Making It Even Better</h4>
+                <ul>
+                    <li>🥗 Add more colorful vegetables for extra vitamins</li>
+                    <li>🧂 Use herbs and spices instead of salt for flavor</li>
+                    <li>🥑 Include healthy fats like avocado or nuts</li>
+                    <li>💧 Pair with plenty of water</li>
+                </ul>
+            </div>
+            <div>
+                <h4>Meal Timing</h4>
+                <ul>
+                    <li>⏰ Eat this meal 2-3 hours before bedtime</li>
+                    <li>🍽️ Consider portion size based on activity level</li>
+                    <li>🚶 Take a short walk after eating</li>
+                    <li>📝 Log how you feel after the meal</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- No suggestions available -->
+    <div class="card text-center">
+        <div class="card-header">
+            <h3 class="card-title">🤖 Generate Meal Improvements</h3>
+        </div>
+        <p>AI meal improvement suggestions are currently unavailable.</p>
+        <div class="d-flex gap-2 justify-content-center">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                📊 Back to Dashboard
+            </a>
+            <a href="{{ url_for('meals_page') }}" class="btn btn-secondary">
+                🍽️ View All Meals
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Modal for using improved meal -->
+    <div id="improved-meal-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Improved Meal</h3>
+                <button class="modal-close" onclick="closeImprovedMealModal()">&times;</button>
+            </div>
+            <form method="POST" action="{{ url_for('add_meal') }}">
+                <div class="form-group">
+                    <label class="form-label">Improved Meal Description</label>
+                    <textarea class="form-textarea" name="description" readonly>{{ suggestions.improved_meal if suggestions else '' }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Portion Size</label>
+                    <select class="form-select" name="portion_size">
+                        <option value="small">Small</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="large">Large</option>
+                    </select>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Add to Today's Meals</button>
+                    <button type="button" class="btn btn-outline" onclick="closeImprovedMealModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.substitutions-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.substitution-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.substitution-from, .substitution-to {
+    flex: 1;
+    text-align: center;
+}
+
+.substitution-label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.substitution-arrow {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.substitution-reason {
+    grid-column: 1 / -1;
+    padding: 1rem;
+    background: rgba(74, 144, 226, 0.05);
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--primary-color);
+}
+
+.nutrition-improvement-item {
+    padding: 1rem;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.nutrition-improvement-item h5 {
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.tip-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.tip-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.modal-close:hover {
+    color: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+    .substitution-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .substitution-arrow {
+        transform: rotate(90deg);
+    }
+    
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function useImprovedMeal() {
+        document.getElementById('improved-meal-modal').style.display = 'flex';
+    }
+
+    function closeImprovedMealModal() {
+        document.getElementById('improved-meal-modal').style.display = 'none';
+    }
+
+    function saveToFavorites() {
+        // Implementation for saving to favorites
+        alert('Meal improvement saved to favorites! You can access it from your profile.');
+    }
+
+    function getMoreSuggestions() {
+        // Implementation for getting more suggestions
+        alert('Generating more AI suggestions... This would refresh the page with new recommendations.');
+    }
+
+    function shareImprovement() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Check out this AI meal improvement!',
+                text: 'NutriTracker AI helped me make my meal healthier',
+                url: window.location.href
+            });
+        } else {
+            // Fallback for browsers that don't support Web Share API
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Link copied to clipboard! Share it with friends.');
+            });
+        }
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('improved-meal-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeImprovedMealModal();
+        }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeImprovedMealModal();
+        }
+    });
+
+    // Animate improvements on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}

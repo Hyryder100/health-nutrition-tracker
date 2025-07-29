@@ -1,0 +1,452 @@
+{% extends "base.html" %}
+
+{% block title %}Health Insights - NutriTracker AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-4">
+        <h1>💡 Your Health Insights</h1>
+        <p class="text-muted">AI-powered analysis of your nutrition patterns and health trends</p>
+        <span class="ai-badge">AI Analysis</span>
+    </div>
+
+    {% if insights %}
+    <!-- Overall Health Score -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">🏆 Overall Health Score</h3>
+            <span class="ai-badge">AI Calculated</span>
+        </div>
+        <div class="text-center">
+            <div class="stat-value" style="font-size: 4rem; color: 
+                {% if insights.overall_score >= 80 %}var(--secondary-color)
+                {% elif insights.overall_score >= 60 %}var(--warning-color)
+                {% else %}var(--accent-color)
+                {% endif %};">
+                {{ insights.overall_score }}
+            </div>
+            <div class="stat-label" style="font-size: 1.5rem;">out of 100</div>
+            <div class="progress-container" style="max-width: 400px; margin: 1rem auto;">
+                <div class="progress-bar">
+                    <div class="progress-fill 
+                        {% if insights.overall_score >= 80 %}
+                        {% elif insights.overall_score >= 60 %}warning
+                        {% else %}danger
+                        {% endif %}" 
+                        style="width: {{ insights.overall_score }}%"></div>
+                </div>
+            </div>
+            <p class="text-muted mt-2">
+                {% if insights.overall_score >= 80 %}
+                    Excellent! You're maintaining great health habits.
+                {% elif insights.overall_score >= 60 %}
+                    Good progress! Some areas could use improvement.
+                {% else %}
+                    There's room for improvement. Let's work on your health goals together.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Strengths and Areas for Improvement -->
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">💪 Your Strengths</h3>
+            </div>
+            <ul class="list-unstyled">
+                {% for strength in insights.strengths %}
+                <li class="d-flex align-items-center gap-2 mb-2">
+                    <span style="color: var(--secondary-color); font-size: 1.2rem;">✅</span>
+                    {{ strength }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">🎯 Areas for Improvement</h3>
+            </div>
+            <ul class="list-unstyled">
+                {% for area in insights.areas_for_improvement %}
+                <li class="d-flex align-items-center gap-2 mb-2">
+                    <span style="color: var(--warning-color); font-size: 1.2rem;">⚠️</span>
+                    {{ area }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- AI Recommendations -->
+    <div class="card ai-suggestion">
+        <div class="card-header">
+            <h3 class="card-title">🤖 AI Recommendations</h3>
+        </div>
+        
+        <div class="grid grid-3">
+            <!-- Immediate Actions -->
+            <div>
+                <h4 class="text-primary">⚡ This Week</h4>
+                <ul>
+                    {% for action in insights.recommendations.immediate %}
+                    <li>{{ action }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Long-term Strategies -->
+            <div>
+                <h4 class="text-primary">🎯 Long-term Goals</h4>
+                <ul>
+                    {% for strategy in insights.recommendations.long_term %}
+                    <li>{{ strategy }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Meal Suggestions -->
+            <div>
+                <h4 class="text-primary">🍽️ Meal Ideas</h4>
+                <ul>
+                    {% for meal in insights.recommendations.meal_suggestions %}
+                    <li>{{ meal }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nutrient Analysis -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📊 Nutrient Analysis</h3>
+        </div>
+        
+        <div class="grid grid-3">
+            <!-- Adequate Nutrients -->
+            <div class="card" style="border-left: 4px solid var(--secondary-color);">
+                <h4 class="text-secondary">✅ Adequate</h4>
+                <div class="text-muted">
+                    {% for nutrient in insights.nutrient_analysis.adequate %}
+                    <div>• {{ nutrient }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Deficient Nutrients -->
+            <div class="card" style="border-left: 4px solid var(--warning-color);">
+                <h4 class="text-warning">⚠️ Below Target</h4>
+                <div class="text-muted">
+                    {% for nutrient in insights.nutrient_analysis.deficient %}
+                    <div>• {{ nutrient }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Excessive Nutrients -->
+            <div class="card" style="border-left: 4px solid var(--accent-color);">
+                <h4 class="text-danger">🔴 Above Target</h4>
+                <div class="text-muted">
+                    {% if insights.nutrient_analysis.excessive %}
+                        {% for nutrient in insights.nutrient_analysis.excessive %}
+                        <div>• {{ nutrient }}</div>
+                        {% endfor %}
+                    {% else %}
+                        <div>• None identified</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Tracking -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📈 Progress Indicators</h3>
+        </div>
+        
+        <div class="grid grid-2">
+            <div>
+                <h4>Key Metrics to Track</h4>
+                <ul class="list-unstyled">
+                    {% for indicator in insights.progress_indicators %}
+                    <li class="d-flex align-items-center gap-2 mb-2">
+                        <span style="color: var(--primary-color); font-size: 1.2rem;">📊</span>
+                        {{ indicator }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div>
+                <h4>Weekly Nutrition Trend</h4>
+                <canvas id="nutritionChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Data Overview -->
+    {% if nutrition_data %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📅 7-Day Nutrition Summary</h3>
+        </div>
+        
+        <div class="nutrition-week-grid">
+            {% for date, daily_data in nutrition_data.items() %}
+            <div class="day-summary">
+                <h5>{{ date.split('-')[2] }}/{{ date.split('-')[1] }}</h5>
+                <div class="nutrition-breakdown">
+                    <div class="nutrition-item">
+                        <div class="nutrition-value">{{ daily_data.calories }}</div>
+                        <div class="nutrition-label">Calories</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value">{{ daily_data.protein | round(1) }}g</div>
+                        <div class="nutrition-label">Protein</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value">{{ daily_data.carbs | round(1) }}g</div>
+                        <div class="nutrition-label">Carbs</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value">{{ daily_data.fat | round(1) }}g</div>
+                        <div class="nutrition-label">Fat</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">⚡ Take Action</h3>
+        </div>
+        <div class="d-flex gap-3 flex-wrap">
+            <a href="{{ url_for('ai_meal_plan') }}" class="btn btn-primary">
+                🤖 Generate Meal Plan
+            </a>
+            <a href="{{ url_for('profile') }}" class="btn btn-secondary">
+                👤 Update Goals
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+                📊 Dashboard
+            </a>
+            <button class="btn btn-warning" onclick="exportInsights()">
+                📤 Export Insights
+            </button>
+            <button class="btn btn-success" onclick="scheduleReminders()">
+                🔔 Set Reminders
+            </button>
+        </div>
+    </div>
+
+    <!-- AI Tips for Improvement -->
+    <div class="card ai-suggestion">
+        <div class="card-header">
+            <h3 class="card-title">💡 Personalized Tips</h3>
+        </div>
+        
+        <div class="grid grid-2">
+            <div>
+                <h4>Quick Wins</h4>
+                <ul>
+                    <li>🚰 Set water reminders every 2 hours</li>
+                    <li>🥗 Add one extra serving of vegetables to lunch</li>
+                    <li>🚶 Take a 10-minute walk after meals</li>
+                    <li>😴 Set a consistent bedtime routine</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h4>Habit Building</h4>
+                <ul>
+                    <li>📱 Log meals immediately after eating</li>
+                    <li>🍽️ Plan tomorrow's meals the night before</li>
+                    <li>🛒 Create shopping lists based on meal plans</li>
+                    <li>📊 Review your progress weekly</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- No insights available -->
+    <div class="card text-center">
+        <div class="card-header">
+            <h3 class="card-title">🤖 Generate Your First Health Insights</h3>
+        </div>
+        <p>Log your meals for at least 3 days to get AI-powered health insights.</p>
+        <div class="d-flex gap-2 justify-content-center">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                📊 Start Tracking
+            </a>
+            <a href="{{ url_for('meals_page') }}" class="btn btn-secondary">
+                🍽️ Add Meals
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.nutrition-week-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.day-summary {
+    padding: 1rem;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.day-summary h5 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.list-unstyled {
+    list-style: none;
+    padding: 0;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Create nutrition trend chart
+    {% if nutrition_data %}
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('nutritionChart').getContext('2d');
+        
+        const dates = {{ nutrition_data.keys() | list | tojson | safe }};
+        const calories = {{ (nutrition_data.values() | map(attribute='calories') | list) | tojson | safe }};
+        const protein = {{ (nutrition_data.values() | map(attribute='protein') | list) | tojson | safe }};
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates.map(date => {
+                    const parts = date.split('-');
+                    return `${parts[2]}/${parts[1]}`;
+                }),
+                datasets: [
+                    {
+                        label: 'Calories',
+                        data: calories,
+                        borderColor: 'rgb(74, 144, 226)',
+                        backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Protein (g)',
+                        data: protein,
+                        borderColor: 'rgb(80, 200, 120)',
+                        backgroundColor: 'rgba(80, 200, 120, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Calories'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Protein (g)'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    });
+    {% endif %}
+
+    function exportInsights() {
+        const insightsData = {
+            generated: new Date().toLocaleDateString(),
+            overall_score: {{ insights.overall_score if insights else 0 }},
+            {% if insights %}
+            strengths: {{ insights.strengths | tojson | safe }},
+            areas_for_improvement: {{ insights.areas_for_improvement | tojson | safe }},
+            recommendations: {{ insights.recommendations | tojson | safe }},
+            nutrient_analysis: {{ insights.nutrient_analysis | tojson | safe }},
+            progress_indicators: {{ insights.progress_indicators | tojson | safe }}
+            {% endif %}
+        };
+        
+        const dataStr = JSON.stringify(insightsData, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'health-insights-' + new Date().toISOString().split('T')[0] + '.json';
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function scheduleReminders() {
+        if ('Notification' in window) {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    // Set up reminders (this would typically connect to a notification service)
+                    alert('Reminder system would be set up here. This could include:\n\n• Meal logging reminders\n• Water intake notifications\n• Weekly progress check-ins\n• Goal milestone celebrations');
+                } else {
+                    alert('Please enable notifications to receive health reminders.');
+                }
+            });
+        } else {
+            alert('Your browser does not support notifications. Consider using our mobile app for reminders.');
+        }
+    }
+
+    // Animate progress bars on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressBars = document.querySelectorAll('.progress-fill');
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 500);
+        });
+    });
+</script>
+{% endblock %}

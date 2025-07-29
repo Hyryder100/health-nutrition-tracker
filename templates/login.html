@@ -1,22 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-</head>
-<body>
-  <div class="auth-container">
-    <h2>Login</h2>
-    <form method="POST" class="auth-form" action="{{ url_for('login') }}">
-      <input type="text" name="username" placeholder="Username" required />
-      <input type="password" name="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
-    <p class="auth-switch">
-      Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
-    </p>
-  </div>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Login - NutriTracker AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="auth-container">
+        <div class="text-center mb-4">
+            <h1>🍎 Welcome Back</h1>
+            <p class="text-muted">Sign in to your NutriTracker AI account</p>
+        </div>
+
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label class="form-label" for="username">Username</label>
+                <input type="text" class="form-input" id="username" name="username" 
+                       placeholder="Enter your username" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" class="form-input" id="password" name="password" 
+                       placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+                🚀 Sign In
+            </button>
+        </form>
+
+        <div class="auth-switch text-center mt-3">
+            <p class="text-muted">Don't have an account? 
+                <a href="{{ url_for('register') }}" class="text-primary">Sign up here</a>
+            </p>
+        </div>
+
+        <!-- Features Preview -->
+        <div class="card mt-4 ai-suggestion">
+            <div class="card-header">
+                <h4 class="card-title">🤖 What's Inside</h4>
+            </div>
+            <div class="grid grid-2">
+                <div>
+                    <h5>AI-Powered Features</h5>
+                    <ul style="font-size: 0.9rem;">
+                        <li>🍽️ Smart meal analysis</li>
+                        <li>📊 Personalized insights</li>
+                        <li>🗓️ AI meal planning</li>
+                        <li>🎯 Goal tracking</li>
+                    </ul>
+                </div>
+                <div>
+                    <h5>Health Tracking</h5>
+                    <ul style="font-size: 0.9rem;">
+                        <li>🔥 Calorie monitoring</li>
+                        <li>💧 Water intake</li>
+                        <li>🏋️ Exercise logging</li>
+                        <li>😴 Sleep tracking</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    max-width: 500px;
+    margin: 4rem auto;
+    padding: 0 1rem;
+}
+
+.auth-form {
+    background: var(--card-background);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.auth-switch a {
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        margin: 2rem auto;
+    }
+    
+    .auth-form {
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
