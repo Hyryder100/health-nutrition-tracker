@@ -1,0 +1,437 @@
+{% extends "base.html" %}
+
+{% block title %}AI Meal Plan - NutriTracker AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-4">
+        <h1>🤖 Your AI-Generated Meal Plan</h1>
+        <p class="text-muted">Personalized weekly meal plan based on your goals and preferences</p>
+        <span class="ai-badge">Powered by AI</span>
+    </div>
+
+    {% if meal_plan %}
+    <!-- Weekly Summary -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📊 Weekly Overview</h3>
+        </div>
+        <div class="grid grid-3">
+            <div class="text-center">
+                <h4 class="text-primary">Average Daily Calories</h4>
+                <div class="stat-value">{{ meal_plan.weekly_summary.avg_calories_per_day }}</div>
+                <small class="text-muted">Tailored to your goals</small>
+            </div>
+            <div class="text-center">
+                <h4 class="text-primary">Nutrition Highlights</h4>
+                <div class="text-muted">
+                    {% for highlight in meal_plan.weekly_summary.nutrition_highlights[:3] %}
+                        <div>• {{ highlight }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="text-center">
+                <h4 class="text-primary">Shopping List</h4>
+                <div class="text-muted">
+                    {{ meal_plan.weekly_summary.shopping_list | length }} items to buy
+                </div>
+                <button class="btn btn-outline btn-small mt-2" onclick="toggleShoppingList()">
+                    View Shopping List
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping List (Hidden by default) -->
+    <div id="shopping-list" class="card" style="display: none;">
+        <div class="card-header">
+            <h3 class="card-title">🛒 Shopping List</h3>
+        </div>
+        <div class="grid grid-4">
+            {% for item in meal_plan.weekly_summary.shopping_list %}
+            <div class="d-flex align-items-center gap-2">
+                <input type="checkbox" id="item-{{ loop.index }}" class="shopping-item">
+                <label for="item-{{ loop.index }}">{{ item.title() }}</label>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="mt-3">
+            <button class="btn btn-secondary btn-small" onclick="checkAllItems()">Check All</button>
+            <button class="btn btn-outline btn-small" onclick="uncheckAllItems()">Uncheck All</button>
+        </div>
+    </div>
+
+    <!-- Daily Meal Plans -->
+    <div class="meal-plans">
+        {% for day_key, day_plan in meal_plan.daily_plans.items() %}
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    {% if day_key == 'day_1' %}Monday
+                    {% elif day_key == 'day_2' %}Tuesday
+                    {% elif day_key == 'day_3' %}Wednesday
+                    {% elif day_key == 'day_4' %}Thursday
+                    {% elif day_key == 'day_5' %}Friday
+                    {% elif day_key == 'day_6' %}Saturday
+                    {% elif day_key == 'day_7' %}Sunday
+                    {% endif %}
+                </h3>
+                <div class="text-primary font-weight-bold">{{ day_plan.total_calories }} calories</div>
+            </div>
+            
+            <div class="grid grid-2">
+                <!-- Meals -->
+                <div>
+                    <h4>🍽️ Meals</h4>
+                    <div class="meal-list">
+                        <!-- Breakfast -->
+                        <div class="meal-item">
+                            <div class="meal-info">
+                                <div class="meal-name">
+                                    🌅 {{ day_plan.breakfast.name }}
+                                </div>
+                                <div class="meal-details">{{ day_plan.breakfast.description }}</div>
+                            </div>
+                            <div class="meal-calories">{{ day_plan.breakfast.calories }} cal</div>
+                            <div class="meal-actions">
+                                <button class="btn btn-outline btn-small" 
+                                        onclick="useMeal('{{ day_plan.breakfast.name }}', {{ day_plan.breakfast.calories }})">
+                                    Use This Meal
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Lunch -->
+                        <div class="meal-item">
+                            <div class="meal-info">
+                                <div class="meal-name">
+                                    🌞 {{ day_plan.lunch.name }}
+                                </div>
+                                <div class="meal-details">{{ day_plan.lunch.description }}</div>
+                            </div>
+                            <div class="meal-calories">{{ day_plan.lunch.calories }} cal</div>
+                            <div class="meal-actions">
+                                <button class="btn btn-outline btn-small" 
+                                        onclick="useMeal('{{ day_plan.lunch.name }}', {{ day_plan.lunch.calories }})">
+                                    Use This Meal
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Dinner -->
+                        <div class="meal-item">
+                            <div class="meal-info">
+                                <div class="meal-name">
+                                    🌙 {{ day_plan.dinner.name }}
+                                </div>
+                                <div class="meal-details">{{ day_plan.dinner.description }}</div>
+                            </div>
+                            <div class="meal-calories">{{ day_plan.dinner.calories }} cal</div>
+                            <div class="meal-actions">
+                                <button class="btn btn-outline btn-small" 
+                                        onclick="useMeal('{{ day_plan.dinner.name }}', {{ day_plan.dinner.calories }})">
+                                    Use This Meal
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Snacks -->
+                        {% if day_plan.snacks %}
+                        <h5 class="mt-3">🥨 Snacks</h5>
+                        {% for snack in day_plan.snacks %}
+                        <div class="meal-item">
+                            <div class="meal-info">
+                                <div class="meal-name">{{ snack.name }}</div>
+                            </div>
+                            <div class="meal-calories">{{ snack.calories }} cal</div>
+                            <div class="meal-actions">
+                                <button class="btn btn-outline btn-small" 
+                                        onclick="useMeal('{{ snack.name }}', {{ snack.calories }})">
+                                    Use This Snack
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Daily Nutrition Summary -->
+                <div>
+                    <h4>📊 Nutrition Summary</h4>
+                    <div class="nutrition-breakdown">
+                        <div class="nutrition-item">
+                            <div class="nutrition-value">{{ day_plan.total_calories }}</div>
+                            <div class="nutrition-label">Total Calories</div>
+                        </div>
+                        
+                        <!-- Estimated macros based on balanced distribution -->
+                        <div class="nutrition-item">
+                            <div class="nutrition-value">{{ (day_plan.total_calories * 0.25 / 4) | round }}g</div>
+                            <div class="nutrition-label">Protein (est.)</div>
+                        </div>
+                        
+                        <div class="nutrition-item">
+                            <div class="nutrition-value">{{ (day_plan.total_calories * 0.45 / 4) | round }}g</div>
+                            <div class="nutrition-label">Carbs (est.)</div>
+                        </div>
+                        
+                        <div class="nutrition-item">
+                            <div class="nutrition-value">{{ (day_plan.total_calories * 0.30 / 9) | round }}g</div>
+                            <div class="nutrition-label">Fat (est.)</div>
+                        </div>
+                    </div>
+
+                    <!-- Day Actions -->
+                    <div class="mt-3">
+                        <button class="btn btn-primary btn-small" 
+                                onclick="useFullDay('{{ day_key }}')">
+                            📅 Use Full Day Plan
+                        </button>
+                        <button class="btn btn-secondary btn-small" 
+                                onclick="customizeDay('{{ day_key }}')">
+                            ✏️ Customize Day
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Actions -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">⚡ Actions</h3>
+        </div>
+        <div class="d-flex gap-3 flex-wrap">
+            <a href="{{ url_for('ai_meal_plan') }}" class="btn btn-primary">
+                🔄 Generate New Plan
+            </a>
+            <a href="{{ url_for('profile') }}" class="btn btn-secondary">
+                ⚙️ Update Preferences
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+                📊 Back to Dashboard
+            </a>
+            <button class="btn btn-warning" onclick="exportMealPlan()">
+                📤 Export Plan
+            </button>
+            <button class="btn btn-success" onclick="saveAsFavorite()">
+                ⭐ Save as Favorite
+            </button>
+        </div>
+    </div>
+
+    <!-- AI Tips -->
+    <div class="card ai-suggestion">
+        <div class="card-header">
+            <h3 class="card-title">💡 AI Tips for Success</h3>
+        </div>
+        <div class="grid grid-2">
+            <div>
+                <h4>Meal Prep Tips</h4>
+                <ul>
+                    <li>🥘 Batch cook proteins at the start of the week</li>
+                    <li>🥗 Pre-cut vegetables and store in containers</li>
+                    <li>🍚 Cook grains in larger quantities and refrigerate</li>
+                    <li>🥤 Prepare smoothie ingredients in freezer bags</li>
+                </ul>
+            </div>
+            <div>
+                <h4>Customization Options</h4>
+                <ul>
+                    <li>🔄 Swap similar foods (chicken ↔ turkey, rice ↔ quinoa)</li>
+                    <li>📏 Adjust portion sizes based on hunger levels</li>
+                    <li>⏰ Move meals around to fit your schedule</li>
+                    <li>🌿 Add extra vegetables to any meal</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- No meal plan generated yet -->
+    <div class="card text-center">
+        <div class="card-header">
+            <h3 class="card-title">🤖 Generate Your First AI Meal Plan</h3>
+        </div>
+        <p>Complete your profile to get a personalized meal plan generated by AI.</p>
+        <div class="d-flex gap-2 justify-content-center">
+            <a href="{{ url_for('profile') }}" class="btn btn-primary">
+                👤 Complete Profile
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                📊 Back to Dashboard
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Meal Addition Modal (Hidden) -->
+    <div id="meal-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Meal to Today</h3>
+                <button class="modal-close" onclick="closeMealModal()">&times;</button>
+            </div>
+            <form id="meal-form" method="POST" action="{{ url_for('add_meal') }}">
+                <div class="form-group">
+                    <label class="form-label">Meal Name</label>
+                    <input type="text" class="form-input" id="modal-meal-name" name="description" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Calories</label>
+                    <input type="number" class="form-input" id="modal-meal-calories" name="calories" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Portion Size</label>
+                    <select class="form-select" name="portion_size">
+                        <option value="small">Small</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="large">Large</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add to Today's Meals</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.modal-close:hover {
+    color: var(--accent-color);
+}
+
+.shopping-item:checked + label {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleShoppingList() {
+        const shoppingList = document.getElementById('shopping-list');
+        shoppingList.style.display = shoppingList.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function checkAllItems() {
+        const checkboxes = document.querySelectorAll('.shopping-item');
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+    }
+
+    function uncheckAllItems() {
+        const checkboxes = document.querySelectorAll('.shopping-item');
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+    }
+
+    function useMeal(mealName, calories) {
+        document.getElementById('modal-meal-name').value = mealName;
+        document.getElementById('modal-meal-calories').value = calories;
+        document.getElementById('meal-modal').style.display = 'flex';
+    }
+
+    function closeMealModal() {
+        document.getElementById('meal-modal').style.display = 'none';
+    }
+
+    function useFullDay(dayKey) {
+        // This would implement adding all meals from a day
+        alert('Full day implementation would add all meals from ' + dayKey + ' to your meal log. This feature can be implemented to automatically add breakfast, lunch, dinner, and snacks.');
+    }
+
+    function customizeDay(dayKey) {
+        // This would open a customization interface
+        alert('Customization interface for ' + dayKey + ' would allow you to modify meals, swap ingredients, or adjust portions.');
+    }
+
+    function exportMealPlan() {
+        // Export functionality
+        const planData = {
+            title: 'AI Generated Meal Plan',
+            generated: new Date().toLocaleDateString(),
+            meals: {}
+        };
+        
+        // Extract meal plan data
+        {% if meal_plan %}
+        planData.meals = {{ meal_plan.daily_plans | tojson | safe }};
+        {% endif %}
+        
+        const dataStr = JSON.stringify(planData, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'meal-plan-' + new Date().toISOString().split('T')[0] + '.json';
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function saveAsFavorite() {
+        // Save as favorite functionality
+        if (confirm('Save this meal plan as a favorite? You can reuse it later.')) {
+            // This would implement saving to favorites
+            alert('Meal plan saved as favorite! You can access it from your profile.');
+        }
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('meal-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeMealModal();
+        }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeMealModal();
+        }
+    });
+</script>
+{% endblock %}

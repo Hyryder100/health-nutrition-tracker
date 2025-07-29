@@ -1,92 +1,370 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-    <div class="container py-5">
-        <h1 class="mb-4 text-center">Welcome, {{ current_user.username }}</h1>
-        <h3 class="text-center mb-4">Dashboard - {{ today }}</h3>
+{% extends "base.html" %}
 
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">🍽️ Meals</h5>
-                        <a href="{{ url_for('meals_page') }}" class="btn btn-primary mt-3">Go to Meals</a>
-                    </div>
+{% block title %}Dashboard - NutriTracker AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h1>Welcome to Your Health Dashboard 🌟</h1>
+        <p class="text-muted">Track your nutrition, exercise, and wellness with AI-powered insights</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_cal }}</div>
+            <div class="stat-label">Calories Today</div>
+            <div class="progress-container mt-2">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ calorie_progress }}%"></div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">💧 Water Intake</h5>
-                        <a href="{{ url_for('water_page') }}" class="btn btn-primary mt-3">Go to Water</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">🏋️ Exercise</h5>
-                        <a href="{{ url_for('exercise_page') }}" class="btn btn-primary mt-3">Go to Exercise</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">⚖️ Weight</h5>
-                        <a href="{{ url_for('weight_page') }}" class="btn btn-primary mt-3">Go to Weight</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">🛌 Sleep</h5>
-                        <a href="{{ url_for('sleep_page') }}" class="btn btn-primary mt-3">Go to Sleep</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">📊 Weekly Summary</h5>
-                        <a href="{{ url_for('weekly_summary') }}" class="btn btn-primary mt-3">View Summary</a>
-                    </div>
-                </div>
+                <small class="text-muted">Goal: {{ calorie_target }} cal</small>
             </div>
         </div>
-
-        {% if predicted_cal %}
-          <div style="margin-top: 1rem; background-color: #e7f3ff; padding: 1rem; border-radius: 5px;">
-            <strong>🔮 Predicted Calorie Target:</strong> {{ predicted_cal }} kcal
-          </div>
-        {% endif %}
-
-
-        {% if suggestions %}
-          <div style="margin-top: 2rem; background: #fff9db; border-left: 5px solid #ffc107; padding: 1rem; border-radius: 4px;">
-            <h3>💡 Smart Suggestions</h3>
-            <ul>
-              {% for tip in suggestions %}
-                <li>{{ tip }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-        {% endif %}
-
-
-        <div class="text-center mt-5">
-            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
+        
+        <div class="stat-card">
+            <div class="stat-value">{{ water }}ml</div>
+            <div class="stat-label">Water Intake</div>
+            <div class="progress-container mt-2">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ water_progress }}%"></div>
+                </div>
+                <small class="text-muted">Goal: 2000ml</small>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-value">{{ total_exercise_cal }}</div>
+            <div class="stat-label">Calories Burned</div>
+            <div class="progress-container mt-2">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ exercise_progress }}%"></div>
+                </div>
+                <small class="text-muted">Goal: 300 cal</small>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-value">{{ sleep_hours }}h</div>
+            <div class="stat-label">Sleep Last Night</div>
+            <div class="progress-container mt-2">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ (sleep_hours / 8 * 100) | round }}%"></div>
+                </div>
+                <small class="text-muted">Goal: 8 hours</small>
+            </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <!-- AI Smart Suggestions -->
+    {% if suggestions %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">🤖 AI Smart Suggestions</h3>
+            <span class="ai-badge">AI Powered</span>
+        </div>
+        <div class="suggestions">
+            {% for suggestion in suggestions %}
+            <div class="suggestion {{ suggestion.type }}">
+                <div class="suggestion-icon">{{ suggestion.icon }}</div>
+                <div class="suggestion-text">{{ suggestion.text }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">⚡ Quick Actions</h3>
+        </div>
+        <div class="quick-actions">
+            <div class="quick-action" onclick="toggleForm('meal-form')">
+                <div class="icon">🍽️</div>
+                <div>Add Meal with AI Analysis</div>
+            </div>
+            <div class="quick-action" onclick="toggleForm('water-form')">
+                <div class="icon">💧</div>
+                <div>Log Water Intake</div>
+            </div>
+            <div class="quick-action" onclick="toggleForm('exercise-form')">
+                <div class="icon">🏋️</div>
+                <div>Add Exercise</div>
+            </div>
+            <div class="quick-action" onclick="toggleForm('sleep-form')">
+                <div class="icon">😴</div>
+                <div>Log Sleep</div>
+            </div>
+            <div class="quick-action" onclick="toggleForm('weight-form')">
+                <div class="icon">⚖️</div>
+                <div>Record Weight</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Forms (Hidden by default) -->
+    <div class="grid grid-2">
+        <!-- AI-Enhanced Meal Form -->
+        <div id="meal-form" class="card" style="display: none;">
+            <div class="card-header">
+                <h4 class="card-title">🍽️ Add Meal</h4>
+                <span class="ai-badge">AI Analysis</span>
+            </div>
+            <form method="POST" action="{{ url_for('add_meal') }}">
+                <div class="form-group">
+                    <label class="form-label" for="description">Meal Description</label>
+                    <textarea class="form-textarea" id="description" name="description" 
+                             placeholder="e.g., Grilled chicken breast with quinoa and steamed broccoli" required></textarea>
+                    <small class="text-muted">Describe your meal in detail for accurate AI nutrition analysis</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="portion_size">Portion Size</label>
+                    <select class="form-select" id="portion_size" name="portion_size">
+                        <option value="small">Small</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="large">Large</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    🤖 Analyze with AI
+                </button>
+            </form>
+        </div>
+
+        <!-- Water Form -->
+        <div id="water-form" class="card" style="display: none;">
+            <div class="card-header">
+                <h4 class="card-title">💧 Log Water</h4>
+            </div>
+            <form method="POST" action="{{ url_for('add_water') }}">
+                <div class="form-group">
+                    <label class="form-label" for="amount">Amount (ml)</label>
+                    <input type="number" class="form-input" id="amount" name="amount" 
+                           value="250" min="50" max="2000" required>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline" onclick="setWaterAmount(250)">Glass (250ml)</button>
+                    <button type="button" class="btn btn-outline" onclick="setWaterAmount(500)">Bottle (500ml)</button>
+                    <button type="button" class="btn btn-outline" onclick="setWaterAmount(1000)">Large (1L)</button>
+                </div>
+                <button type="submit" class="btn btn-secondary mt-2">Add Water</button>
+            </form>
+        </div>
+
+        <!-- Exercise Form -->
+        <div id="exercise-form" class="card" style="display: none;">
+            <div class="card-header">
+                <h4 class="card-title">🏋️ Add Exercise</h4>
+            </div>
+            <form method="POST" action="{{ url_for('add_exercise') }}">
+                <div class="form-group">
+                    <label class="form-label" for="exercise_name">Exercise Name</label>
+                    <input type="text" class="form-input" id="exercise_name" name="name" 
+                           placeholder="e.g., Running, Weight lifting, Yoga" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="duration">Duration (minutes)</label>
+                    <input type="number" class="form-input" id="duration" name="duration" 
+                           value="30" min="5" max="300" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="exercise_type">Exercise Type</label>
+                    <select class="form-select" id="exercise_type" name="exercise_type">
+                        <option value="cardio">Cardio</option>
+                        <option value="strength">Strength Training</option>
+                        <option value="flexibility">Flexibility</option>
+                        <option value="sports">Sports</option>
+                        <option value="general">General Activity</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="calories_burned">Calories Burned</label>
+                    <input type="number" class="form-input" id="calories_burned" name="calories_burned" 
+                           value="200" min="10" max="1000" required>
+                </div>
+                
+                <button type="submit" class="btn btn-warning">Add Exercise</button>
+            </form>
+        </div>
+
+        <!-- Sleep Form -->
+        <div id="sleep-form" class="card" style="display: none;">
+            <div class="card-header">
+                <h4 class="card-title">😴 Log Sleep</h4>
+            </div>
+            <form method="POST" action="{{ url_for('add_sleep') }}">
+                <div class="form-group">
+                    <label class="form-label" for="hours">Hours Slept</label>
+                    <input type="number" class="form-input" id="hours" name="hours" 
+                           step="0.5" min="0" max="24" value="8" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="quality">Sleep Quality (1-10)</label>
+                    <input type="range" class="form-input" id="quality" name="quality" 
+                           min="1" max="10" value="7" oninput="updateQualityDisplay(this.value)">
+                    <div class="text-center mt-1">
+                        <span id="quality-display">7</span> / 10
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-secondary">Log Sleep</button>
+            </form>
+        </div>
+
+        <!-- Weight Form -->
+        <div id="weight-form" class="card" style="display: none;">
+            <div class="card-header">
+                <h4 class="card-title">⚖️ Record Weight</h4>
+            </div>
+            <form method="POST" action="{{ url_for('add_weight') }}">
+                <div class="form-group">
+                    <label class="form-label" for="weight">Weight (kg)</label>
+                    <input type="number" class="form-input" id="weight" name="weight" 
+                           step="0.1" min="20" max="300" 
+                           value="{{ latest_weight or 70 }}" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Record Weight</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Nutrition Breakdown -->
+    {% if total_cal > 0 %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📊 Today's Nutrition Breakdown</h3>
+        </div>
+        <div class="nutrition-breakdown">
+            <div class="nutrition-item">
+                <div class="nutrition-value">{{ total_protein | round(1) }}g</div>
+                <div class="nutrition-label">Protein</div>
+            </div>
+            <div class="nutrition-item">
+                <div class="nutrition-value">{{ total_carbs | round(1) }}g</div>
+                <div class="nutrition-label">Carbohydrates</div>
+            </div>
+            <div class="nutrition-item">
+                <div class="nutrition-value">{{ total_fat | round(1) }}g</div>
+                <div class="nutrition-label">Fats</div>
+            </div>
+            <div class="nutrition-item">
+                <div class="nutrition-value">{{ total_cal }}</div>
+                <div class="nutrition-label">Calories</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Meals -->
+    {% if meals %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">🍽️ Today's Meals</h3>
+            <a href="{{ url_for('meals_page') }}" class="btn btn-outline btn-small">View All</a>
+        </div>
+        <div class="meal-list">
+            {% for meal in meals[:3] %}
+            <div class="meal-item">
+                <div class="meal-info">
+                    <div class="meal-name">
+                        {{ meal.name }}
+                        {% if meal.ai_analyzed %}
+                        <span class="ai-badge">AI Analyzed</span>
+                        {% endif %}
+                    </div>
+                    <div class="meal-details">
+                        {% if meal.protein_g %}
+                        Protein: {{ meal.protein_g }}g | Carbs: {{ meal.carbs_g }}g | Fat: {{ meal.fat_g }}g
+                        {% endif %}
+                        {% if meal.health_score %}
+                        | Health Score: {{ meal.health_score }}/10
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="meal-calories">{{ meal.calories }} cal</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- AI Features Call-to-Action -->
+    <div class="grid grid-2">
+        <div class="card ai-suggestion">
+            <div class="card-header">
+                <h4 class="card-title">🤖 AI Meal Planning</h4>
+            </div>
+            <p>Get personalized meal plans based on your goals, preferences, and nutritional needs.</p>
+            <a href="{{ url_for('ai_meal_plan') }}" class="btn btn-primary">
+                Generate AI Meal Plan
+            </a>
+        </div>
+
+        <div class="card ai-suggestion">
+            <div class="card-header">
+                <h4 class="card-title">💡 Health Insights</h4>
+            </div>
+            <p>Discover AI-powered insights about your nutrition patterns and health trends.</p>
+            <a href="{{ url_for('health_insights') }}" class="btn btn-secondary">
+                View Health Insights
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleForm(formId) {
+        // Hide all forms first
+        const forms = ['meal-form', 'water-form', 'exercise-form', 'sleep-form', 'weight-form'];
+        forms.forEach(id => {
+            const form = document.getElementById(id);
+            if (id === formId) {
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            } else {
+                form.style.display = 'none';
+            }
+        });
+    }
+
+    function setWaterAmount(amount) {
+        document.getElementById('amount').value = amount;
+    }
+
+    function updateQualityDisplay(value) {
+        document.getElementById('quality-display').textContent = value;
+    }
+
+    // Auto-calculate calories for exercise based on duration and type
+    document.getElementById('duration').addEventListener('input', function() {
+        const duration = parseInt(this.value);
+        const type = document.getElementById('exercise_type').value;
+        
+        let caloriesPerMinute = {
+            'cardio': 8,
+            'strength': 6,
+            'flexibility': 3,
+            'sports': 10,
+            'general': 4
+        };
+        
+        const estimatedCalories = duration * (caloriesPerMinute[type] || 5);
+        document.getElementById('calories_burned').value = estimatedCalories;
+    });
+
+    document.getElementById('exercise_type').addEventListener('change', function() {
+        // Trigger duration input event to recalculate calories
+        document.getElementById('duration').dispatchEvent(new Event('input'));
+    });
+</script>
+{% endblock %}

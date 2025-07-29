@@ -1,24 +1,206 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Register</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-</head>
-<body>
-  <div class="auth-container">
-    <h2>Register</h2>
-    <form method="POST" class="auth-form" action="{{ url_for('register') }}">
-      <input type="text" name="username" placeholder="Username" required />
-      <input type="email" name="email" placeholder="Email" required />
-      <input type="password" name="password" placeholder="Password" required />
-      <input type="password" name="confirm_password" placeholder="Confirm Password" required />
-      <button type="submit">Register</button>
-    </form>
-    <p class="auth-switch">
-      Already have an account? <a href="{{ url_for('login') }}">Login here</a>
-    </p>
-  </div>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Register - NutriTracker AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="auth-container">
+        <div class="text-center mb-4">
+            <h1>🌟 Join NutriTracker AI</h1>
+            <p class="text-muted">Start your journey to better health with AI-powered nutrition tracking</p>
+        </div>
+
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label class="form-label" for="username">Username</label>
+                <input type="text" class="form-input" id="username" name="username" 
+                       placeholder="Choose a unique username" required>
+                <small class="text-muted">This will be your unique identifier on NutriTracker AI</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" class="form-input" id="password" name="password" 
+                       placeholder="Create a strong password" required minlength="6">
+                <small class="text-muted">Minimum 6 characters for better security</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="confirm_password">Confirm Password</label>
+                <input type="password" class="form-input" id="confirm_password" name="confirm_password" 
+                       placeholder="Re-enter your password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+                🚀 Create Account
+            </button>
+        </form>
+
+        <div class="auth-switch text-center mt-3">
+            <p class="text-muted">Already have an account? 
+                <a href="{{ url_for('login') }}" class="text-primary">Sign in here</a>
+            </p>
+        </div>
+
+        <!-- Benefits Preview -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h4 class="card-title">🎯 Why Choose NutriTracker AI?</h4>
+            </div>
+            <div class="grid grid-1">
+                <div>
+                    <h5>🤖 AI-Powered Intelligence</h5>
+                    <p class="text-muted">Get personalized meal recommendations, nutrition analysis, and health insights powered by advanced AI.</p>
+                </div>
+                <div>
+                    <h5>📊 Comprehensive Tracking</h5>
+                    <p class="text-muted">Track calories, macronutrients, water intake, exercise, sleep, and weight all in one place.</p>
+                </div>
+                <div>
+                    <h5>🎯 Goal Achievement</h5>
+                    <p class="text-muted">Set and achieve your health goals with AI-guided recommendations and progress tracking.</p>
+                </div>
+                <div>
+                    <h5>🔒 Privacy First</h5>
+                    <p class="text-muted">Your health data is encrypted and secure. We never share your personal information.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Getting Started Steps -->
+        <div class="card mt-4 ai-suggestion">
+            <div class="card-header">
+                <h4 class="card-title">🚀 Getting Started</h4>
+            </div>
+            <div class="text-muted">
+                <p><strong>1.</strong> Create your account (1 minute)</p>
+                <p><strong>2.</strong> Complete your health profile (2 minutes)</p>
+                <p><strong>3.</strong> Start logging meals and get AI insights (5 minutes)</p>
+                <p><strong>4.</strong> Generate your first AI meal plan (instant)</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    max-width: 600px;
+    margin: 4rem auto;
+    padding: 0 1rem;
+}
+
+.auth-form {
+    background: var(--card-background);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.auth-switch a {
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.password-strength {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.strength-weak { color: var(--accent-color); }
+.strength-medium { color: var(--warning-color); }
+.strength-strong { color: var(--secondary-color); }
+
+@media (max-width: 768px) {
+    .auth-container {
+        margin: 2rem auto;
+        max-width: 500px;
+    }
+    
+    .auth-form {
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Password confirmation validation
+    document.getElementById('confirm_password').addEventListener('input', function() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = this.value;
+        
+        if (confirmPassword && password !== confirmPassword) {
+            this.style.borderColor = 'var(--accent-color)';
+            this.setCustomValidity('Passwords do not match');
+        } else {
+            this.style.borderColor = 'var(--border-color)';
+            this.setCustomValidity('');
+        }
+    });
+
+    // Password strength indicator
+    document.getElementById('password').addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+        let strengthText = '';
+        let strengthClass = '';
+
+        // Check password criteria
+        if (password.length >= 6) strength++;
+        if (password.match(/[a-z]/)) strength++;
+        if (password.match(/[A-Z]/)) strength++;
+        if (password.match(/[0-9]/)) strength++;
+        if (password.match(/[^A-Za-z0-9]/)) strength++;
+
+        // Remove existing strength indicator
+        const existingIndicator = this.parentNode.querySelector('.password-strength');
+        if (existingIndicator) {
+            existingIndicator.remove();
+        }
+
+        if (password.length > 0) {
+            if (strength < 3) {
+                strengthText = 'Weak - Consider adding numbers, symbols, or uppercase letters';
+                strengthClass = 'strength-weak';
+            } else if (strength < 5) {
+                strengthText = 'Medium - Good password strength';
+                strengthClass = 'strength-medium';
+            } else {
+                strengthText = 'Strong - Excellent password!';
+                strengthClass = 'strength-strong';
+            }
+
+            const strengthDiv = document.createElement('div');
+            strengthDiv.className = `password-strength ${strengthClass}`;
+            strengthDiv.textContent = strengthText;
+            this.parentNode.appendChild(strengthDiv);
+        }
+    });
+
+    // Form validation
+    document.querySelector('.auth-form').addEventListener('submit', function(e) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            alert('Passwords do not match. Please check and try again.');
+            return false;
+        }
+
+        if (password.length < 6) {
+            e.preventDefault();
+            alert('Password must be at least 6 characters long.');
+            return false;
+        }
+    });
+</script>
+{% endblock %}
