@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calm Companion • Mental Health Chatbot</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="chat-app" aria-label="Mental health chatbot">
+      <header class="app-header">
+        <div class="bot-avatar" aria-hidden="true">🫶</div>
+        <div class="titles">
+          <h1 class="app-title">Calm Companion</h1>
+          <p class="subtitle">I’m here to listen</p>
+        </div>
+        <div class="header-actions">
+          <button id="crisisBtn" class="btn btn-outline">Crisis Support</button>
+        </div>
+      </header>
+
+      <section id="messages" class="messages" role="log" aria-live="polite" aria-relevant="additions"></section>
+
+      <section class="quick-replies" aria-label="Quick replies">
+        <button class="chip" data-text="I’m feeling overwhelmed">I’m feeling overwhelmed</button>
+        <button class="chip" data-text="I need encouragement">I need encouragement</button>
+        <button class="chip" data-text="Tell me a coping strategy">Tell me a coping strategy</button>
+      </section>
+
+      <form id="composer" class="composer" autocomplete="off">
+        <textarea id="input" rows="1" placeholder="Type a message..." aria-label="Type your message" spellcheck="true"></textarea>
+        <div class="composer-actions">
+          <button type="button" id="clearBtn" class="btn btn-ghost" title="Clear chat">Clear</button>
+          <button type="submit" id="sendBtn" class="btn btn-primary" aria-label="Send message">Send</button>
+        </div>
+      </form>
+    </main>
+
+    <div id="crisisModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="crisisTitle" aria-describedby="crisisDesc" hidden>
+      <div class="modal-backdrop" data-close="true"></div>
+      <div class="modal-card" role="document">
+        <header class="modal-header">
+          <h2 id="crisisTitle">Crisis Support</h2>
+          <button class="icon-btn" id="closeCrisis" aria-label="Close dialog">✕</button>
+        </header>
+        <div class="modal-body">
+          <p id="crisisDesc">If you are in immediate danger, call your local emergency number. This chatbot does not provide emergency services.</p>
+          <ul class="contacts">
+            <li><strong>US:</strong> Call 988 (Suicide & Crisis Lifeline) or 911</li>
+            <li><strong>UK & ROI:</strong> Samaritans 116 123</li>
+            <li><strong>Canada:</strong> 1-833-456-4566 (or 988 where available)</li>
+            <li><strong>Australia:</strong> Lifeline 13 11 14</li>
+          </ul>
+          <div class="breath" aria-label="Guided breathing">
+            <div class="breath-circle" aria-hidden="true"></div>
+            <div class="breath-instructions">
+              <span class="phase" aria-live="polite">Inhale</span>
+              <p>Follow the circle: inhale 4s, hold 4s, exhale 6s.</p>
+            </div>
+          </div>
+        </div>
+        <footer class="modal-footer">
+          <button class="btn btn-outline" id="toggleBreath" aria-pressed="false">Pause</button>
+          <button class="btn btn-primary" id="okCrisis">Got it</button>
+        </footer>
+      </div>
+    </div>
+
+    <script src="./script.js" defer></script>
+  </body>
+  </html>
+
