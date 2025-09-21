@@ -103,7 +103,25 @@
     return 'general';
   }
 
-  function generateBotReply(userText) {
+  async function generateBotReply(userText) {
+    // Try backend API first; fall back to local logic
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 2500);
+      const res = await fetch('/api/reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: userText }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && typeof data.reply === 'string') return data.reply;
+      }
+      // non-OK fallthrough to local
+    } catch {}
+
     const tag = classify(userText);
     if (tag === 'crisis') {
       return "It sounds urgent. I care about your safety. If you might harm yourself or others, please contact local emergency services or use the Crisis Support button for immediate help.";
@@ -147,8 +165,8 @@
     autoResize();
 
     sendBtn.disabled = true;
-    setTimeout(() => {
-      const reply = generateBotReply(trimmed);
+    setTimeout(async () => {
+      const reply = await generateBotReply(trimmed);
       appendAndPersist('bot', reply);
       sendBtn.disabled = false;
       inputEl.focus();
