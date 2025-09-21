@@ -1,0 +1,15 @@
+{
+  "name": "calm-companion",
+  "version": "1.0.0",
+  "description": "Calm Companion - a simple mental health chatbot (frontend + optional backend)",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
+

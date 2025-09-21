@@ -1,3 +1,28 @@
+# Calm Companion
+
+Simple mental health chatbot with a calming UI. Runs fully client-side, and optionally with a small Node/Express backend for the reply API.
+
+## Run (no backend)
+Open `index.html` directly in your browser (double-click or drag into a tab).
+
+## Run with backend
+1. Install Node.js 18+.
+2. In this folder:
+   ```bash
+   npm install
+   npm run start
+   ```
+3. Open `http://localhost:3000`.
+
+The frontend auto-detects the backend. If the API is unreachable, it falls back to local keyword replies.
+
+## Features
+- Calming UI with soft colors and rounded corners
+- Onboarding greeting and empathetic, supportive responses
+- Keyword matching and quick replies
+- Local chat history via localStorage
+- Crisis Support modal with contacts and breathing animation
+
 # 🩺 Health and Nutrition Tracker
 
 A full-stack web application that allows users to log and manage their daily health data — including meals, water intake, sleep, exercise, and weight. Built with Flask and SQLite, this app also includes a weekly summary dashboard with interactive visualizations using Chart.js.
